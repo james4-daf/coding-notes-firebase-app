@@ -1,4 +1,4 @@
-
+"use-client"
 export default async function NotesEditor({
                                        params,
                                    }: {
@@ -8,8 +8,11 @@ export default async function NotesEditor({
     console.log(noteId)
     return (
 
-
+<>
         <div>My Post: {noteId}</div>
+
+
+</>
 
     )
 }

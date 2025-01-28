@@ -1,5 +1,6 @@
+"use client"
 import React from 'react';
-
+import { signInWithGoogle } from "../firebase/auth";
 
 
 const notesData: notesDataTypes[] = [
@@ -16,7 +17,7 @@ const NotesEditor = ({notesData}) => {
     return (
         <div>
 
-            
+
         </div>
     );
 };

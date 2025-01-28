@@ -1,38 +1,20 @@
-import CodingNotesList from "@/app/components/CodingNotesList";
-import NotesEditor from "@/app/components/NotesEditor";
+'use client';
 
-export default function Home() {
+import { useAuth } from './context/authContext';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
+export default function HomePage() {
+    const { user } = useAuth();
+    const router = useRouter();
 
-     interface notesDataTypes {
-        name: string;
-        content: string;
-        id: number;
-    }
+    useEffect(() => {
+        if (user) {
+            router.push('/notePad'); // Redirect authenticated users to dashboard
+        } else {
+            router.push('/auth'); // Redirect unauthenticated users to login
+        }
+    }, [user, router]);
 
-
-    const notesData: notesDataTypes[] = [
-        {name: "first",
-            content: "First note",
-        id:1},
-
-        {name: "second",
-            content: "Second note",
-        id:2},
-    ]
-  return (
-
-          <div >
-
-              <NotesEditor notesData={notesData} />
-
-
-
-
-          </div>
-
-
-
-
-  );
+    return null; // No content on this page
 }
