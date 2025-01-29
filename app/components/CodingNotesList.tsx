@@ -1,37 +1,40 @@
 "use client"
 import React, {useState,useEffect} from 'react';
 import Link from "next/link";
-import { readUserData} from "../firebase/realtimeDatabase";
 import {useAuth} from "@/app/context/authContext";
+import {addUserNote, getUserNotes} from "../firebase/firestore";
 
-const CodingNotesList = ({notesData}) => {
+const CodingNotesList = () => {
     const {user} = useAuth();
     const [notes, setNotes] = useState([]);
 
+
+    function addNote() {
+        addUserNote(user.uid)
+        getUserNotes(user.uid).then(setNotes);
+    }
+
     useEffect(() => {
-        if (user?.uid) {
-            // Fetch notes only if the user is authenticated
-            const fetchNotes = () => {
-                readUserData(user.uid, "notes", (fetchedNotes) => {
-                    setNotes(fetchedNotes);
-                });
-            };
-            fetchNotes();
+        if (user) {
+            console.log(user.uid);
+            getUserNotes(user.uid).then(setNotes);
+
         }
     }, [user]);
 
     return (
         <div className="columns-3xs">
-            {notes.map((note) => (
+            {notes?.map((note) => (
                 <div key={note.id} className="border h-22">
                     <Link href={`/notepad/${note.id}`}>
                         <div className="p-6">
-                            <b>{note.name}</b>
+                            <b>{note.title}</b>
                             <p className="font-thin">{note.content}</p>
                         </div>
                     </Link>
                 </div>
             ))}
+            <button onClick={addNote} className="p-6 border rounded-l w-full hover:bg-sky-300">Add a note</button>
         </div>
     );
 };
