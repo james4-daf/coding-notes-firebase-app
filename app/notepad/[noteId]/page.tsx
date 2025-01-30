@@ -1,18 +1,21 @@
-"use-client"
-export default async function NotesEditor({
-                                       params,
-                                   }: {
-    params: Promise<{ slug: string }>
-}) {
-    const noteId = (await params).noteId
-    console.log(noteId)
+'use client'
+import React, {useContext} from 'react'
+import {NoteContext} from "@/app/context/NoteContext";
+
+export default function NotesEditor() {
+    const { currentNote } = useContext(NoteContext);
+
+    if (!currentNote) {
+        return <p>Loading...</p>;
+    }
+
+    //  console.log("currentNote",currentNote)
+    // console.log("params",params.noteId)
+
     return (
-
-<>
-        <div>My Post: {noteId}</div>
-
-
-</>
-
-    )
+        <div>
+            <h1>{currentNote.title}</h1>
+            <p>{currentNote.content}</p>
+        </div>
+    );
 }

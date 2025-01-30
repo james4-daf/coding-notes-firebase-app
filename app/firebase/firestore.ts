@@ -1,14 +1,14 @@
 import { db } from "./firebaseConfig";
 import { collection, addDoc, getDocs, serverTimestamp } from "firebase/firestore";
 
-export const addUserNote = async (userId: string) => {
+export const addUserNote = async (userId: string, userInput : string) => {
     try {
         // Reference the user's `notes` subcollection
         const notesRef = collection(db, "users", userId, "notes");
 
         // Default note data
         const newNote = {
-            title: "noteTitle",
+            title: userInput,
             content: "new note",
             createdAt: serverTimestamp(), // Firestore timestamp
         };
@@ -17,6 +17,7 @@ export const addUserNote = async (userId: string) => {
         const docRef = await addDoc(notesRef, newNote);
 
         console.log("New note added with ID:", docRef.id);
+        console.log(userInput);
         return docRef.id; // Return the new note ID
     } catch (error) {
         console.error("Error adding note:", error);

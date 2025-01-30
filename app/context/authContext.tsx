@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation'; //
 import { auth } from '../firebase/firebaseConfig';
+import {NoteProvider} from "@/app/context/NoteContext";
 
 const AuthContext = createContext();
 
@@ -20,7 +21,7 @@ export function AuthProvider({ children }) {
                 const uid = user.uid;
 
                 // ...
-                console.log("uid", uid)
+                // console.log("uid", uid)
                 router.push('/notepad'); //
             } else {
                 // User is signed out
@@ -42,7 +43,10 @@ export function AuthProvider({ children }) {
 
     return (
         <AuthContext.Provider value={{ user, signIn, logOut }}>
+            <NoteProvider>
+
     {children}
+            </NoteProvider>
     </AuthContext.Provider>
 );
 }

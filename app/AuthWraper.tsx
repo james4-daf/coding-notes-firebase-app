@@ -16,7 +16,10 @@ export default function AuthWraper({ children }: { children: React.ReactNode }) 
     }, [user, router]);
 
     if (!user) {
-        return null; // Optionally show a loading state here
+        return (<div>
+            Loading...
+        </div>); // Optionally show a loading state here
+
     }
 
     return <>{children}</>;
