@@ -4,6 +4,17 @@ This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-
 
 First, run the development server:
 
+## Module cant be found
+delete .next file
+delete node modules
+
+npm i 
+npm run build
+git add .
+git commit
+# to run
+npm run dev
+
 ```bash
 npm run dev
 # or

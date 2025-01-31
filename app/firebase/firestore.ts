@@ -1,5 +1,5 @@
 import { db } from "./firebaseConfig";
-import { collection, addDoc, getDocs, serverTimestamp } from "firebase/firestore";
+import { collection, addDoc, getDocs, serverTimestamp, updateDoc,doc } from "firebase/firestore";
 
 export const addUserNote = async (userId: string, userInput : string) => {
     try {
@@ -42,5 +42,16 @@ export const getUserNotes = async (userId: string) => {
     } catch (error) {
         console.error("Error fetching notes:", error);
         return [];
+    }
+};
+
+
+export const updateNoteContent = async (userId: string,noteId: string, newContent: string) => {
+    try {
+        const noteRef = doc(db, "users", userId, "notes", noteId); // Replace "your-user-id" dynamically
+        await updateDoc(noteRef, { content: newContent });
+        console.log("Note updated successfully!");
+    } catch (error) {
+        console.error("Error updating note:", error);
     }
 };

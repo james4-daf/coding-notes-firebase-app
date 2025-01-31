@@ -4,6 +4,7 @@ import {useAuth} from "@/app/context/authContext";
 import {addUserNote, getUserNotes} from "../firebase/firestore";
 import { useRouter } from 'next/navigation'
 import {NoteContext} from "@/app/context/NoteContext";
+import { useParams } from 'next/navigation';
 
 interface Note {
     id: string;
@@ -26,6 +27,8 @@ const CodingNotesList = () => {
     const [noteInput, setInputNote] = useState<string>('')
     const router = useRouter()
     const [error, setError] = useState<string | null>(null);
+    const params = useParams();
+    const noteId = params?.noteId;
 
     const handleAddNoteSubmit = async (e) => {
         e.preventDefault();
@@ -46,7 +49,7 @@ const CodingNotesList = () => {
         if (newNoteId) {
             const newNote = { id: newNoteId, title: noteInput.trim(), content: "new note" };
             setCurrentNote(newNote);
-            router.push(`/notepad/${newNoteId}`);
+            router.push(`/notepad/${newNoteId}`,{ scroll: false });
         }
         setInputNote(""); // Clear input field
         getUserNotes(user.uid).then(setNotes);
@@ -56,7 +59,9 @@ const CodingNotesList = () => {
         const selectedNote = notes.find((note) => note.id === id);
         if (selectedNote) {
             setCurrentNote(selectedNote);
-            router.push(`/notepad/${id}`);
+            getUserNotes(user.uid).then(setNotes);
+
+            router.push(`/notepad/${id}`,{ scroll: false });
         }
     };
 
@@ -75,11 +80,11 @@ const CodingNotesList = () => {
     return (
         <div className="columns-3xs">
             {notes?.map((note) => (
-                <div key={note.id} className="border h-22">
+                <div key={note.id} className={`border h-22 ${note.id === noteId ? 'bg-gray-100' : ''}`}>
                     <button onClick={() => handleNavigate(note.id)} className="w-full">
                         <div className="p-6">
-                            <b>{note.title}</b>
-                            <p className="font-thin">{note.content}</p>
+                            <b dangerouslySetInnerHTML={{__html: note.content.split("<br>")[0]}}></b>
+                            <p className="font-thin" dangerouslySetInnerHTML={{__html: note.content}}></p>
                         </div>
                     </button>
                 </div>
@@ -87,11 +92,13 @@ const CodingNotesList = () => {
 
             {
                 !showAddNote ?
-            <button onClick={() => setShowAddNote((prev) => !prev)} className="p-6 border rounded-l w-full hover:bg-sky-300">Add a note</button>
+                    <button onClick={() => setShowAddNote((prev) => !prev)}
+                            className="p-6 border rounded-l w-full hover:bg-sky-300">Add a note</button>
                     :
                     <form onSubmit={handleAddNoteSubmit}>
 
-                    <input type="text" value={noteInput} onChange={(e) => setInputNote(e.target.value)} className={"p-6 border rounded-l w-full "} placeholder="Enter a note title"/>
+                        <input type="text" value={noteInput} onChange={(e) => setInputNote(e.target.value)}
+                               className={"p-6 border rounded-l w-full "} placeholder="Enter a note title"/>
                     </form>
             }
             {error && <div className="text-red-500">{error}</div>}
