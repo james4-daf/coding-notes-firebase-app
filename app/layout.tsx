@@ -1,6 +1,8 @@
 import './globals.css';
 import { AuthProvider } from './context/authContext';
 import type {Metadata} from "next";
+import {Header} from "@/app/components/Header";
+import CodingNotesList from "@/app/components/CodingNotesList";
 
 export const metadata: Metadata = {
     title: "Notes App",
@@ -9,10 +11,19 @@ export const metadata: Metadata = {
 
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+
     return (
         <html lang="en">
             <body>
-            <AuthProvider>{children}</AuthProvider>
+            <AuthProvider>
+                <Header/>
+                <div className="flex columns-2 gap-4 p-8">
+                    <CodingNotesList/>
+                    {children}
+                </div>
+
+
+            </AuthProvider>
             </body>
         </html>
     );

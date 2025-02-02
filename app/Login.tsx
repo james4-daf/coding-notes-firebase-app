@@ -1,9 +1,18 @@
 'use client';
 
 import { useAuth } from './context/authContext';
+import { useEffect} from "react";
+import {router} from "next/client";
 
 export default function Login() {
-    const { signIn } = useAuth();
+    const { signIn,user } = useAuth();
+
+
+    useEffect(() => {
+        if(user) {
+            router.push('/');
+        }
+    }, [user])
 
     return (
         <div>

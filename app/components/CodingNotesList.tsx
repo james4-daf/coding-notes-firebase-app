@@ -61,7 +61,7 @@ const CodingNotesList = () => {
             setCurrentNote(selectedNote);
             getUserNotes(user.uid).then(setNotes);
 
-            router.push(`/notepad/${id}`,{ scroll: false });
+            router.push(`/${id}`,{ scroll: false });
         }
     };
 
@@ -72,7 +72,7 @@ const CodingNotesList = () => {
                 deleteUserNote(user.uid, noteId).then(() => {
                     getUserNotes(user.uid).then(setNotes);
                     setCurrentNote(null);
-                    router.push("/notepad");
+                    router.push("/");
                 });
             }
         };

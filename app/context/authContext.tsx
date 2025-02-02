@@ -24,27 +24,43 @@ export function AuthProvider({ children }) {
 
                 // ...
                 // console.log("uid", uid)
-                router.push('/notepad'); //
+                // router.push('/notepad'); //
             } else {
                 // User is signed out
                 // ...
+                router.push('/login');
                 console.log("user is logged out")
             }
         });
         return () => unsubscribe();
     }, [user]);
 
-    const signIn = () => {
-        const provider = new GoogleAuthProvider();
-        return signInWithPopup(auth, provider);
+     const signInWithGoogle = async () => {
+        try {
+            const result = await signInWithPopup(auth, new GoogleAuthProvider());
+            const user = result.user;
+
+            window.alert(`Signed in with ${user.email}`);
+            router.push('/');
+        } catch (e) {
+            window.alert(e.message);
+        }
     };
 
-    const logOut = () => {
-        return signOut(auth);
+
+     const signOutFromGoogle = async () => {
+        try {
+            await signOut(auth);
+
+            // window.alert('Signed out!');
+           router.push('/login');
+        } catch (e) {
+            window.alert(e.message);
+        }
     };
 
     return (
-        <AuthContext.Provider value={{ user, signIn, logOut, loading }}>
+        <AuthContext.Provider value={{ user, signInWithGoogle, signOutFromGoogle, loading }}>
             <NoteProvider>
 
     {children}
