@@ -4,6 +4,7 @@ import { useAuth } from '../context/authContext';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import CodingNotesList from "@/app/components/CodingNotesList";
+import Link from "next/link";
 
 // interface notesDataTypes {
 //   name: string;
@@ -30,10 +31,10 @@ export default function RootLayout({
 
     return (
         <AuthProvider>
-            <nav>
-                <h1>Dashboard</h1>
+            <nav className=' p-8 flex columns-3 justify-between'>
+                <Link href={'/notepad'}>Dashboard</Link>
                 <p>Welcome, {user?.displayName || 'User'}!</p>
-                <button onClick={logOut}>logOut</button>
+                <button onClick={logOut}>Log Out</button>
             </nav>
             <div className="flex columns-2 gap-4 p-8">
                 <CodingNotesList />

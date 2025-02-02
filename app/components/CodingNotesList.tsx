@@ -52,6 +52,7 @@ const CodingNotesList = () => {
             router.push(`/notepad/${newNoteId}`,{ scroll: false });
         }
         setInputNote(""); // Clear input field
+        setShowAddNote(false)
         getUserNotes(user.uid).then(setNotes);
     };
 
@@ -81,10 +82,10 @@ const CodingNotesList = () => {
         <div className="columns-3xs">
             {notes?.map((note) => (
                 <div key={note.id} className={`border h-22 ${note.id === noteId ? 'bg-gray-100' : ''}`}>
-                    <button onClick={() => handleNavigate(note.id)} className="w-full">
+                    <button onClick={() => handleNavigate(note.id)} className="w-full text-left">
                         <div className="p-6">
-                            <b dangerouslySetInnerHTML={{__html: note.content.split("<br>")[0]}}></b>
-                            <p className="font-thin" dangerouslySetInnerHTML={{__html: note.content}}></p>
+                            <b className="block" dangerouslySetInnerHTML={{__html: note.content.match(/<p>.*?<\/p>/)?.[0] }}></b>
+                            <p className="font-thin" dangerouslySetInnerHTML={{__html:note.content.replace(/^<p>.*?<\/p>/, "").trim().substring(0,15)+"..."}}></p>
                         </div>
                     </button>
                 </div>

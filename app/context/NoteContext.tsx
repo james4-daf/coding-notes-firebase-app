@@ -18,6 +18,15 @@ export const NoteProvider = ({ children }) => {
     }, [user]);
 
     // console.log(notes);
+    useEffect(() => {
+        if (currentNote) {
+            setNotes((prevNotes) =>
+                prevNotes.map((note) =>
+                    note.id === currentNote.id ? { ...note, content: currentNote.content } : note
+                )
+            );
+        }
+    }, [currentNote]);
 
 
     return (
