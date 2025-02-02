@@ -1,14 +1,13 @@
 "use client"
 import React, {useState,useEffect,useContext} from 'react';
 import {useAuth} from "@/app/context/authContext";
-import {addUserNote, getUserNotes} from "../firebase/firestore";
+import {addUserNote, deleteUserNote, getUserNotes,restoreUserNote} from "../firebase/firestore";
 import { useRouter } from 'next/navigation'
 import {NoteContext} from "@/app/context/NoteContext";
 import { useParams } from 'next/navigation';
 
 interface Note {
     id: string;
-    title: string;
     content: string;
 }
 
@@ -47,7 +46,7 @@ const CodingNotesList = () => {
 
         const newNoteId = await addUserNote(user.uid, noteInput.trim());
         if (newNoteId) {
-            const newNote = { id: newNoteId, title: noteInput.trim(), content: "new note" };
+            const newNote = { id: newNoteId, content: noteInput.trim() };
             setCurrentNote(newNote);
             router.push(`/notepad/${newNoteId}`,{ scroll: false });
         }
@@ -67,6 +66,23 @@ const CodingNotesList = () => {
     };
 
     useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === "Backspace" && noteId && document.activeElement?.tagName !== "INPUT" && document.activeElement?.tagName !== "TEXTAREA" && !document.activeElement?.classList.contains("ProseMirror")) {
+                event.preventDefault(); // Prevent accidental navigation
+                deleteUserNote(user.uid, noteId).then(() => {
+                    getUserNotes(user.uid).then(setNotes);
+                    setCurrentNote(null);
+                    router.push("/notepad");
+                });
+            }
+        };
+
+
+        document.addEventListener("keydown", handleKeyDown);
+        return () => document.removeEventListener("keydown", handleKeyDown);
+    }, [noteId, user, setNotes, setCurrentNote, router]);
+
+    useEffect(() => {
         if (user) {
             // console.log(user.uid);
             getUserNotes(user.uid).then(setNotes);
@@ -78,13 +94,40 @@ const CodingNotesList = () => {
         return <div className="text-center my-8">Loading notes...</div>;
     }
 
+    const isHtml = (str: string): boolean => {
+        const pattern = /<\/?[a-z][\s\S]*>/i;
+        return pattern.test(str);
+    };
+
     return (
         <div className="columns-3xs">
             {notes?.map((note) => (
                 <div key={note.id} className={`border h-22 ${note.id === noteId ? 'bg-gray-100' : ''}`}>
                     <button onClick={() => handleNavigate(note.id)} className="w-full text-left">
                         <div className="p-6">
-                            <b className="block" dangerouslySetInnerHTML={{__html: note.content.match(/<p>.*?<\/p>/)?.[0] }}></b>
+                            <b>
+                                {isHtml(note.content) ? (
+                                    <div
+                                        dangerouslySetInnerHTML={{
+                                            __html: note.content.match(/<p>.*?<\/p>/)?.[0],
+                                        }}
+                                    ></div>
+                                ) : (
+                                    note.content
+                                )}
+                            </b>
+                            {/*<div className="font-thin">*/}
+                            {/*    {isHtml(note.content) ? (*/}
+                            {/*        <p*/}
+                            {/*            dangerouslySetInnerHTML={{*/}
+                            {/*                __html: note.content.match(/<p>.*?<\/p>/)?.[1],*/}
+                            {/*            }}*/}
+                            {/*        ></p>*/}
+                            {/*    ) : (*/}
+                            {/*        note.content*/}
+                            {/*    )}*/}
+                            {/*</div>*/}
+                            {/*<b className="block" dangerouslySetInnerHTML={{__html: note.content.match(/<p>.*?<\/p>/)?.[0] }}></b>*/}
                             <p className="font-thin" dangerouslySetInnerHTML={{__html:note.content.replace(/^<p>.*?<\/p>/, "").trim().substring(0,15)+"..."}}></p>
                         </div>
                     </button>
@@ -98,7 +141,7 @@ const CodingNotesList = () => {
                     :
                     <form onSubmit={handleAddNoteSubmit}>
 
-                        <input type="text" value={noteInput} onChange={(e) => setInputNote(e.target.value)}
+                    <input type="text" value={noteInput} onChange={(e) => setInputNote(e.target.value)}
                                className={"p-6 border rounded-l w-full "} placeholder="Enter a note title"/>
                     </form>
             }

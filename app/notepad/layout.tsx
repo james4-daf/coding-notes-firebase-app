@@ -18,7 +18,7 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
 
-    const { user, logOut } = useAuth();
+    const { user, logOut, loading } = useAuth();
     const router = useRouter();
 
     useEffect(() => {
@@ -31,6 +31,9 @@ export default function RootLayout({
 
     return (
         <AuthProvider>
+            {!loading && (
+                <>
+
             <nav className=' p-8 flex columns-3 justify-between'>
                 <Link href={'/notepad'}>Dashboard</Link>
                 <p>Welcome, {user?.displayName || 'User'}!</p>
@@ -40,6 +43,8 @@ export default function RootLayout({
                 <CodingNotesList />
                 {children}
             </div>
+                </>
+            )}
         </AuthProvider>
     );
 }

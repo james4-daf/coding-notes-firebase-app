@@ -47,7 +47,7 @@ export default function NotesEditor() {
 
     return (
         <div>
-            <EditorContent editor={editor} className="focus:outline-none outline-none"/>
+            <EditorContent editor={editor} className="focus:outline-none outline-0"/>
         </div>
     );
 }

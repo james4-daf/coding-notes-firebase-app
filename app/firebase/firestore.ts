@@ -1,5 +1,5 @@
 import { db } from "./firebaseConfig";
-import { collection, addDoc, getDocs, serverTimestamp, updateDoc,doc } from "firebase/firestore";
+import { collection, addDoc, getDocs, serverTimestamp, updateDoc,doc,deleteDoc,setDoc } from "firebase/firestore";
 
 export const addUserNote = async (userId: string, userInput : string) => {
     try {
@@ -8,8 +8,7 @@ export const addUserNote = async (userId: string, userInput : string) => {
 
         // Default note data
         const newNote = {
-            title: userInput,
-            content: "new note",
+            content: userInput,
             createdAt: serverTimestamp(), // Firestore timestamp
         };
 
@@ -53,5 +52,26 @@ export const updateNoteContent = async (userId: string,noteId: string, newConten
         console.log("Note updated successfully!");
     } catch (error) {
         console.error("Error updating note:", error);
+    }
+};
+
+// Delete a note from Firestore
+export const deleteUserNote = async (userId: string, noteId: string) => {
+    try {
+        await deleteDoc(doc(db, "users", userId, "notes", noteId));
+        console.log(`Note ${noteId} deleted`);
+    } catch (error) {
+        console.error("Error deleting note:", error);
+    }
+};
+
+// Restore a deleted note
+export const restoreUserNote = async (userId: string, note) => {
+    try {
+        const noteRef = doc(db, "users", userId, "notes", note.id);
+        await setDoc(noteRef, { ...note, createdAt: serverTimestamp() });
+        console.log(`Note ${note.id} restored`);
+    } catch (error) {
+        console.error("Error restoring note:", error);
     }
 };
