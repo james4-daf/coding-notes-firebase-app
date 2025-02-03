@@ -28,7 +28,7 @@ export function AuthProvider({ children }) {
             } else {
                 // User is signed out
                 // ...
-                router.push('/login');
+                router.push('/');
                 console.log("user is logged out")
             }
         });
@@ -40,7 +40,7 @@ export function AuthProvider({ children }) {
             const result = await signInWithPopup(auth, new GoogleAuthProvider());
             const user = result.user;
 
-            window.alert(`Signed in with ${user.email}`);
+            // window.alert(`Signed in with ${user.email}`);
             router.push('/');
         } catch (e) {
             window.alert(e.message);
@@ -53,7 +53,6 @@ export function AuthProvider({ children }) {
             await signOut(auth);
 
             // window.alert('Signed out!');
-           router.push('/login');
         } catch (e) {
             window.alert(e.message);
         }

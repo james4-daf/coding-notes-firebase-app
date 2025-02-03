@@ -5,6 +5,7 @@ import {addUserNote, deleteUserNote, getUserNotes,restoreUserNote} from "../fire
 import { useRouter } from 'next/navigation'
 import {NoteContext} from "@/app/context/NoteContext";
 import { useParams } from 'next/navigation';
+import Loading from "@/app/components/Loading";
 
 interface Note {
     id: string;
@@ -20,7 +21,7 @@ interface NoteContextType {
 
 
 const CodingNotesList = () => {
-    const {user} = useAuth();
+    const {user ,loading} = useAuth();
     const { notes, setNotes,setCurrentNote } = useContext(NoteContext) as NoteContextType;
     const [showAddNote, setShowAddNote] = useState(false);
     const [noteInput, setInputNote] = useState<string>('')
@@ -48,7 +49,7 @@ const CodingNotesList = () => {
         if (newNoteId) {
             const newNote = { id: newNoteId, content: noteInput.trim() };
             setCurrentNote(newNote);
-            router.push(`/notepad/${newNoteId}`,{ scroll: false });
+            router.push(`/${newNoteId}`,{ scroll: false });
         }
         setInputNote(""); // Clear input field
         setShowAddNote(false)
@@ -91,13 +92,17 @@ const CodingNotesList = () => {
 
 
     if (!notes) {
-        return <div className="text-center my-8">Loading notes...</div>;
+        return <Loading />
     }
 
     const isHtml = (str: string): boolean => {
         const pattern = /<\/?[a-z][\s\S]*>/i;
         return pattern.test(str);
     };
+    if (loading) {
+        return <Loading />;
+    }
+    if (!user) {return null}
 
     return (
         <div className="columns-3xs">
