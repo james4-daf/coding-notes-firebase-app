@@ -1,7 +1,7 @@
 "use client"
 import React, {useState,useEffect,useContext} from 'react';
 import {useAuth} from "@/app/context/authContext";
-import {addUserNote, deleteUserNote, getUserNotes,restoreUserNote} from "../firebase/firestore";
+import {addUserNote, deleteUserNote, getUserNotes} from "../firebase/firestore";
 import { useRouter } from 'next/navigation'
 import {NoteContext} from "@/app/context/NoteContext";
 import { useParams } from 'next/navigation';
@@ -95,6 +95,7 @@ const CodingNotesList = () => {
         return <Loading />
     }
 
+
     const isHtml = (str: string): boolean => {
         const pattern = /<\/?[a-z][\s\S]*>/i;
         return pattern.test(str);
@@ -140,7 +141,7 @@ const CodingNotesList = () => {
             ))}
 
             {
-                !showAddNote ?
+                !showAddNote || notes.length === 0  ?
                     <button onClick={() => setShowAddNote((prev) => !prev)}
                             className="p-6 border rounded-l w-full hover:bg-sky-300">Add a note</button>
                     :
@@ -150,6 +151,7 @@ const CodingNotesList = () => {
                                className={"p-6 border rounded-l w-full "} placeholder="Enter a note title"/>
                     </form>
             }
+
             {error && <div className="text-red-500">{error}</div>}
         </div>
     );

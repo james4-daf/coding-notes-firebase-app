@@ -1,18 +1,37 @@
 "use client";
-import {createContext, useEffect, useState} from "react";
+import {createContext, ReactNode, useEffect, useState, useContext} from "react";
 import {getUserNotes} from "@/app/firebase/firestore";
 import {useAuth} from "@/app/context/authContext";
-export const NoteContext = createContext();
 
-export const NoteProvider = ({ children }) => {
+
+interface Note {
+    id: string;
+    content: string;
+}
+
+// Define a type for the context
+interface NoteContextType {
+    notes: Note[];
+    setNotes: (notes: (prevNotes) => any) => void;
+    currentNote: Note | null;
+    setCurrentNote: (note: Note | null) => void;
+}
+
+// Create a context with proper typing
+export const NoteContext = createContext<NoteContextType | undefined>(undefined);
+
+export function NoteProvider({ children }: { children: ReactNode }) {
     const {user} = useAuth();
-    const [notes, setNotes] = useState([]);
-    const [currentNote, setCurrentNote] = useState(null);
+    const [notes, setNotes] = useState<Note[]>([]);
+    const [currentNote, setCurrentNote] = useState<Note | null>(null);
 
     useEffect(() => {
         if (user) {
             // console.log(user.uid);
-            getUserNotes(user.uid).then(setNotes);
+            // Assuming getUserNotes returns an array of objects with { id: string, content: string }
+            getUserNotes(user.uid).then((fetchedNotes: Note[]) => {
+                setNotes(fetchedNotes); // Now it's of type Note[]
+            });
 
         }
     }, [user]);
@@ -35,4 +54,14 @@ export const NoteProvider = ({ children }) => {
         </NoteContext.Provider>
     );
 };
+
+
+// Custom hook to use NoteContext with safety
+export function useNotes() {
+    const context = useContext(NoteContext);
+    if (!context) {
+        throw new Error("useNotes must be used within a NoteProvider");
+    }
+    return context;
+}
 

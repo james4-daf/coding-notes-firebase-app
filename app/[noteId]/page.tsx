@@ -1,14 +1,15 @@
 'use client'
-import React, {useContext,useEffect} from 'react'
-import {NoteContext} from "@/app/context/NoteContext";
+import React, { useEffect } from 'react'
+import { useNotes } from "@/app/context/NoteContext";
 import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import {useAuth} from "@/app/context/authContext";
-import {updateNoteContent,getUserNotes} from "@/app/firebase/firestore";
+import { useAuth } from "@/app/context/authContext";
+import { updateNoteContent, getUserNotes } from "@/app/firebase/firestore";
 
 export default function NotesEditor() {
     const { user } = useAuth();
-    const { currentNote, setCurrentNote, setNotes } = useContext(NoteContext);
+    const { currentNote, setCurrentNote, setNotes } = useNotes();
+
     const editor = useEditor({
         extensions: [
             StarterKit,
@@ -19,8 +20,11 @@ export default function NotesEditor() {
             const newContent = editor.getHTML();
 
             if (currentNote && newContent !== currentNote.content) {
-                // Update current note
-                setCurrentNote((prev) => prev && { ...prev, content: newContent });
+                // Update current note directly
+                setCurrentNote({
+                    ...currentNote,
+                    content: newContent
+                });
 
                 // Update notes list in context
                 setNotes((prevNotes) =>
@@ -30,24 +34,26 @@ export default function NotesEditor() {
                 );
 
                 // Save to Firestore
-                updateNoteContent(user.uid, currentNote.id, newContent);
+                if (user?.uid) {
+                    updateNoteContent(user.uid, currentNote.id, newContent);
+                }
             }
         },
-    })
+    });
 
     useEffect(() => {
-        if (user) {
+        if (user?.uid) {
             getUserNotes(user.uid).then(setNotes);
         }
-    }, [user]);
+    }, [user, setNotes]);
+
     if (!currentNote) {
         return <p>Loading...</p>;
     }
 
-
     return (
         <div>
-            <EditorContent editor={editor} className="focus:outline-none outline-0"/>
+            <EditorContent editor={editor} className="focus:outline-none outline-0" />
         </div>
     );
 }
