@@ -5,6 +5,7 @@ import { EditorContent, useEditor } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
 import { useAuth } from "@/app/context/authContext";
 import { updateNoteContent, getUserNotes } from "@/app/firebase/firestore";
+import {Note} from "@/app/components/CodingNotesList";
 
 export default function NotesEditor() {
     const { user } = useAuth();
@@ -27,8 +28,8 @@ export default function NotesEditor() {
                 });
 
                 // Update notes list in context
-                setNotes((prevNotes) =>
-                    prevNotes.map((note) =>
+                setNotes((prevNotes: Note[]) =>
+                    prevNotes.map((note: Note) =>
                         note.id === currentNote.id ? { ...note, content: newContent } : note
                     )
                 );

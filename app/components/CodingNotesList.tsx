@@ -20,7 +20,6 @@ interface NoteContextType {
     setCurrentNote: React.Dispatch<React.SetStateAction<Note | null>>;
 }
 
-
 const CodingNotesList = () => {
     const isMobile = useDeviceType();
     const {user ,loading} = useAuth();
@@ -30,7 +29,7 @@ const CodingNotesList = () => {
     const router = useRouter()
     const [error, setError] = useState<string | null>(null);
     const params = useParams();
-    const noteId = params?.noteId;
+    const noteId = Array.isArray(params?.noteId) ? params.noteId[0] : params?.noteId;
 
 
     const handleAddNoteSubmit = async (e:  React.FormEvent<HTMLFormElement>) => {
@@ -97,7 +96,7 @@ const CodingNotesList = () => {
             // console.log(user.uid);
             getUserNotes(user.uid).then(setNotes);
         }
-    }, [user]);
+    }, [user, setNotes]);
 
 
     if (!notes) {

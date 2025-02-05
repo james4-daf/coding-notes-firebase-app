@@ -12,7 +12,7 @@ interface Note {
 // Define a type for the context
 interface NoteContextType {
     notes: Note[];
-    setNotes: (notes: (prevNotes: never) => never) => void;
+    setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
     currentNote: Note | null;
     setCurrentNote: (note: Note | null) => void;
 }
