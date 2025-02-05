@@ -1,5 +1,6 @@
 import { db } from "./firebaseConfig";
 import { collection, addDoc, getDocs, serverTimestamp, updateDoc,doc,deleteDoc } from "firebase/firestore";
+import {Note} from "../components/CodingNotesList"
 
 export const addUserNote = async (userId: string, userInput : string) => {
     try {
@@ -25,25 +26,20 @@ export const addUserNote = async (userId: string, userInput : string) => {
 
 
 
-export const getUserNotes = async (userId: string) => {
+export const getUserNotes = async (userId: string): Promise<Note[]> => {
     try {
-        // Reference the `notes` subcollection inside the user's document
         const notesRef = collection(db, "users", userId, "notes");
-
-        // Fetch all notes for this user
         const querySnapshot = await getDocs(notesRef);
 
-        // Format the notes into an array
         return querySnapshot.docs.map((doc) => ({
             id: doc.id, // Note ID
-            ...doc.data(), // Note data (title, content, createdAt, etc.)
+            content: (doc.data().content as string) || "", // Ensure `content` exists
         }));
     } catch (error) {
         console.error("Error fetching notes:", error);
         return [];
     }
 };
-
 
 export const updateNoteContent = async (userId: string,noteId: string, newContent: string) => {
     try {

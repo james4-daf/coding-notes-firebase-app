@@ -6,10 +6,10 @@ import {useParams} from "next/navigation";
 
 
 export const Header = () => {
-    const { user, loading, signOutFromGoogle,signInWithGoogle } = useAuth();
-    if (!user) {return null}
     const isMobile = useDeviceType();
+    const { user, loading, signOutFromGoogle,signInWithGoogle } = useAuth();
     const params = useParams();
+    if (!user) {return null}
     const noteId = params?.noteId;
 
     return (

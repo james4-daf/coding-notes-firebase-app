@@ -8,7 +8,7 @@ import { useParams } from 'next/navigation';
 import Loading from "@/app/components/Loading";
 import {useDeviceType} from "@/app/hooks/useDeviceType";
 
-interface Note {
+export interface Note {
     id: string;
     content: string;
 }
@@ -32,7 +32,8 @@ const CodingNotesList = () => {
     const params = useParams();
     const noteId = params?.noteId;
 
-    const handleAddNoteSubmit = async (e) => {
+
+    const handleAddNoteSubmit = async (e:  React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         if (!user) {
@@ -55,14 +56,18 @@ const CodingNotesList = () => {
         }
         setInputNote(""); // Clear input field
         setShowAddNote(false)
-        getUserNotes(user.uid).then(setNotes);
+        getUserNotes(user.uid).then((notes) => {
+            setNotes(notes.map(note => ({ id: note.id, content: note.content || "" })));
+        });
+
     };
 
     const handleNavigate = async  (id: string) => {
+        if (!user) return; // Ensure user exists
         const selectedNote = notes.find((note) => note.id === id);
         if (selectedNote) {
             setCurrentNote(selectedNote);
-            await getUserNotes(user.uid).then(setNotes);
+            await getUserNotes(user?.uid).then(setNotes);
 
             router.push(`/${id}`,{ scroll: false });
         }
@@ -70,8 +75,10 @@ const CodingNotesList = () => {
 
     useEffect(() => {
         const handleKeyDown = (event: KeyboardEvent) => {
+            if (!user) return; // Ensure user exists
             if (event.key === "Backspace" && noteId && document.activeElement?.tagName !== "INPUT" && document.activeElement?.tagName !== "TEXTAREA" && !document.activeElement?.classList.contains("ProseMirror")) {
-                event.preventDefault(); // Prevent accidental navigation
+                event.preventDefault();
+
                 deleteUserNote(user.uid, noteId).then(() => {
                     getUserNotes(user.uid).then(setNotes);
                     setCurrentNote(null);
@@ -117,7 +124,7 @@ const CodingNotesList = () => {
                                 {isHtml(note.content) ? (
                                     <div
                                         dangerouslySetInnerHTML={{
-                                            __html: note.content.match(/<p>.*?<\/p>/)?.[0],
+                                            __html: note.content.match(/<p>.*?<\/p>/)?.[0] ?? '',
                                         }}
                                     ></div>
                                 ) : (

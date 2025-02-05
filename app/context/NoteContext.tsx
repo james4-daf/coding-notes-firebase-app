@@ -12,13 +12,13 @@ interface Note {
 // Define a type for the context
 interface NoteContextType {
     notes: Note[];
-    setNotes: (notes: (prevNotes) => any) => void;
+    setNotes: (notes: (prevNotes: never) => never) => void;
     currentNote: Note | null;
     setCurrentNote: (note: Note | null) => void;
 }
 
 // Create a context with proper typing
-export const NoteContext = createContext<NoteContextType | undefined>(undefined);
+export const NoteContext = createContext<NoteContextType | null>(null);
 
 export function NoteProvider({ children }: { children: ReactNode }) {
     const {user} = useAuth();

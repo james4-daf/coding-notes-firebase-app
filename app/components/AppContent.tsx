@@ -10,7 +10,7 @@ import NotesEditor from "@/app/[noteId]/page";
 import { useParams } from "next/navigation";
 
 
-export default function AppContent({ children }: { children: React.ReactNode }) {
+export default function AppContent() {
     const { user, loading } = useAuth();
     const isMobile = useDeviceType();
     const params = useParams();
