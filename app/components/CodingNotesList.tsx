@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import {NoteContext} from "@/app/context/NoteContext";
 import { useParams } from 'next/navigation';
 import Loading from "@/app/components/Loading";
+import {useDeviceType} from "@/app/hooks/useDeviceType";
 
 interface Note {
     id: string;
@@ -21,6 +22,7 @@ interface NoteContextType {
 
 
 const CodingNotesList = () => {
+    const isMobile = useDeviceType();
     const {user ,loading} = useAuth();
     const { notes, setNotes,setCurrentNote } = useContext(NoteContext) as NoteContextType;
     const [showAddNote, setShowAddNote] = useState(false);
@@ -56,11 +58,11 @@ const CodingNotesList = () => {
         getUserNotes(user.uid).then(setNotes);
     };
 
-    const handleNavigate = (id: string) => {
+    const handleNavigate = async  (id: string) => {
         const selectedNote = notes.find((note) => note.id === id);
         if (selectedNote) {
             setCurrentNote(selectedNote);
-            getUserNotes(user.uid).then(setNotes);
+            await getUserNotes(user.uid).then(setNotes);
 
             router.push(`/${id}`,{ scroll: false });
         }
@@ -106,7 +108,7 @@ const CodingNotesList = () => {
     if (!user) {return null}
 
     return (
-        <div className="columns-3xs">
+        <div className={`grid ${isMobile ? 'grid-cols-1' : 'columns-3xs min-w-64'}`}>
             {notes?.map((note) => (
                 <div key={note.id} className={`border h-22 ${note.id === noteId ? 'bg-gray-100' : ''}`}>
                     <button onClick={() => handleNavigate(note.id)} className="w-full text-left">
@@ -134,20 +136,21 @@ const CodingNotesList = () => {
                             {/*    )}*/}
                             {/*</div>*/}
                             {/*<b className="block" dangerouslySetInnerHTML={{__html: note.content.match(/<p>.*?<\/p>/)?.[0] }}></b>*/}
-                            <p className="font-thin" dangerouslySetInnerHTML={{__html:note.content.replace(/^<p>.*?<\/p>/, "").trim().substring(0,15)+"..."}}></p>
+                            <p className="font-thin"
+                               dangerouslySetInnerHTML={{__html: note.content.replace(/^<p>.*?<\/p>/, "").trim().substring(0, 15) + "..."}}></p>
                         </div>
                     </button>
                 </div>
             ))}
 
             {
-                !showAddNote || notes.length === 0  ?
+                !showAddNote ?
                     <button onClick={() => setShowAddNote((prev) => !prev)}
                             className="p-6 border rounded-l w-full hover:bg-sky-300">Add a note</button>
                     :
                     <form onSubmit={handleAddNoteSubmit}>
 
-                    <input type="text" value={noteInput} onChange={(e) => setInputNote(e.target.value)}
+                        <input type="text" value={noteInput} onChange={(e) => setInputNote(e.target.value)}
                                className={"p-6 border rounded-l w-full "} placeholder="Enter a note title"/>
                     </form>
             }

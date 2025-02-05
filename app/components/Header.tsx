@@ -1,16 +1,21 @@
 'use client';
 import { useAuth } from '../context/authContext';
 import Link from 'next/link';
+import {useDeviceType} from "@/app/hooks/useDeviceType";
+import {useParams} from "next/navigation";
 
 
 export const Header = () => {
     const { user, loading, signOutFromGoogle,signInWithGoogle } = useAuth();
     if (!user) {return null}
+    const isMobile = useDeviceType();
+    const params = useParams();
+    const noteId = params?.noteId;
 
     return (
 
         <div className='py-4 px-8 border-b font-medium flex justify-between'>
-            <Link href={'/notepad'}>Dashboard</Link>
+            {isMobile && noteId  && <Link href="/" className="text-blue-500 hover:underline">← Back</Link>}
             <p>Welcome, {user?.displayName || 'User'}!</p>
 
     {!loading && (
