@@ -4,7 +4,6 @@ import { createContext, useContext, useEffect, useState,ReactNode } from 'react'
 import { onAuthStateChanged, signInWithPopup, GoogleAuthProvider, signOut } from 'firebase/auth';
 import { useRouter } from 'next/navigation'; //
 import { auth } from '../firebase/firebaseConfig';
-import {NoteProvider} from "@/app/context/NoteContext";
 import {User} from "firebase/auth";
 
 
@@ -31,7 +30,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                     // User is signed in, see docs for a list of available properties
                     // https://firebase.google.com/docs/reference/js/firebase.User
                     // const uid = user.uid;
-
+                    // console.log("User is logged in:", user);
                     // ...
                     // console.log("uid", uid)
                     // router.push('/notepad'); //
@@ -78,9 +77,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         return (
             <AuthContext.Provider value={{user, signInWithGoogle, signOutFromGoogle, loading}}>
-                <NoteProvider>
+
                     {children}
-                </NoteProvider>
+
             </AuthContext.Provider>
         );
     }

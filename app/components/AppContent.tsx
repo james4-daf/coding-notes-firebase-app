@@ -9,7 +9,6 @@ import {useDeviceType} from "@/app/hooks/useDeviceType";
 import NotesEditor from "@/app/[noteId]/page";
 import { useParams } from "next/navigation";
 
-
 export default function AppContent() {
     const { user, loading } = useAuth();
     const isMobile = useDeviceType();
@@ -25,24 +24,22 @@ export default function AppContent() {
 
     return (
         <>
-            <Header />
-            {isMobile ? (
-                // Mobile: Show only one view at a time
-                <div className="p-4">
-                    {noteId ? <NotesEditor/> : <CodingNotesList/>}
-                </div>
-            ) : (
-                // Desktop: Show both side by side
-                <div className="flex columns-2 gap-4 p-8">
-                    <CodingNotesList />
-                    <NotesEditor />
-                </div>
-            )}
-
-
-
-
-
+                <Header />
+                {isMobile ? (
+                    // Mobile: Show only one view at a time
+                    <div className="p-4">
+                        {noteId ? <NotesEditor/> : <CodingNotesList/>}
+                    </div>
+                ) : (
+                    // Desktop: Show both side by side
+                    <div className="flex gap-4 p-8">
+                        <div className={`${noteId ? 'flex-1' : 'w-[300px]'} transition-all`}>
+                            <CodingNotesList/>
+                        </div>
+                        {noteId && <NotesEditor/>}
+                    </div>
+                )}
         </>
+
     );
 }

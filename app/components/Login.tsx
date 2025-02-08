@@ -20,6 +20,8 @@ export default function Login() {
                     src="https://www.svgrepo.com/show/475656/google-color.svg"
                     loading="lazy"
                     alt="google logo"
+                    width="96"
+                    height="96"
                 />
                 <span>Login with Google</span>
             </button>

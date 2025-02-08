@@ -10,9 +10,11 @@
   },
   "dependencies": {
     "@auth/core": "^0.37.0",
+    "@tanstack/react-query": "^5.66.0",
     "@tiptap/react": "^2.11.5",
     "@tiptap/starter-kit": "^2.11.5",
     "firebase": "^11.2.0",
+    "jotai": "^2.11.3",
     "next": "15.1.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
