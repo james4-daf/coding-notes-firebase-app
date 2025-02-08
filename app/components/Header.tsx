@@ -13,7 +13,6 @@ export const Header = () => {
     const noteId = params?.noteId;
 
     return (
-
         <div className='py-4 px-8 border-b font-medium flex justify-between'>
             {isMobile && noteId  && <Link href="/" className="text-blue-500 hover:underline">← Back</Link>}
             <p>Welcome, {user?.displayName || 'User'}!</p>

@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation'; //
 import { auth } from '../firebase/firebaseConfig';
 import {User} from "firebase/auth";
 
-
 interface AuthContextType {
     user: User | null;
     signInWithGoogle: () => Promise<void>;
@@ -60,7 +59,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             }
         };
 
-
         const signOutFromGoogle = async () => {
             try {
                 await signOut(auth);
@@ -77,9 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         return (
             <AuthContext.Provider value={{user, signInWithGoogle, signOutFromGoogle, loading}}>
-
                     {children}
-
             </AuthContext.Provider>
         );
     }

@@ -8,11 +8,10 @@ import {
     doc,
     deleteDoc,
     getDoc,
-    where,
-    Timestamp
 } from "firebase/firestore";
-import {Note} from "../components/CodingNotesList"
-import {query} from "@firebase/database";
+import {Note} from "@/app/state/notes";
+
+
 
 export const addUserNote = async (userId: string, userInput : string) => {
     try {
@@ -60,20 +59,6 @@ export const getNoteById = async (noteId: string) => {
     return docSnap.exists() ? { id: docSnap.id, ...docSnap.data() } : null;
 };
 
-
-export const getRecentlyUpdatedNotes = async (userId: string, minutesAgo: number) => {
-    const now = Timestamp.now();
-    const minutesAgoTimestamp = new Timestamp(now.seconds - minutesAgo * 60, now.nanoseconds);
-
-    const notesRef = collection(db, "notes");
-    const q = query(notesRef,
-        where("userId", "==", userId),
-        where("lastUpdated", ">", minutesAgoTimestamp)
-    );
-
-    const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-};
 
 export const updateNoteContent = async (userId: string,noteId: string, newContent: string) => {
     try {

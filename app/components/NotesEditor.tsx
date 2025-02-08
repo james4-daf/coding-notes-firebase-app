@@ -2,26 +2,20 @@ import React, { useEffect, useState, useRef } from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { useAuth } from "@/app/context/authContext";
-import { useParams } from "next/navigation";
 import {currentNote, editorContent, isLoading, notes} from "@/app/state/notes";
-import {useAtom, useAtomValue} from "jotai";
+import {useAtom, useAtomValue, useSetAtom} from "jotai";
 import {SingleNotesFetcher} from "@/app/SingleNoteFetcher";
 import {doc, onSnapshot, updateDoc} from "firebase/firestore";
 import {db} from "@/app/firebase/firebaseConfig";
 
 export default function NotesEditor() {
-    const [content, setEditorContent] = useAtom(editorContent);
+    const setEditorContent = useSetAtom(editorContent);
     const [selectedNote] = useAtom(currentNote);
     const { user } = useAuth();
-    const params = useParams();
     const [saving, setSaving] = useState(false);
     const [hasEdited, setHasEdited] = useState(false);
     const loading = useAtomValue(isLoading);
-    const noteId = Array.isArray(params?.noteId) ? params.noteId[0] : params?.noteId;
-    const [notesList, setNotes] = useAtom(notes);
-
-
-    // console.log(noteId);
+    const setNotes = useSetAtom(notes);
 
     // Local state for editor content
     useEffect(() => {
@@ -29,7 +23,6 @@ export default function NotesEditor() {
             setEditorContent(selectedNote?.content);
         }
     }, [selectedNote, setEditorContent]);
-
 
     // Ref to store debounce timer
     const saveTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -50,7 +43,6 @@ export default function NotesEditor() {
             );
 
             setHasEdited(true);
-            setSaving(true);
 
             // Debounce saving to Firestore
             if (saveTimerRef.current) clearTimeout(saveTimerRef.current);

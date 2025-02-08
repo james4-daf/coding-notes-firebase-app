@@ -1,38 +1,26 @@
 "use client"
-import React, {useState,useEffect} from 'react';
+import React, {useState} from 'react';
 import {useAuth} from "@/app/context/authContext";
-import {addUserNote, deleteUserNote, getUserNotes} from "../firebase/firestore";
+import {addUserNote, getUserNotes} from "../firebase/firestore";
 import { useRouter } from 'next/navigation'
 import { useParams } from 'next/navigation';
-import {useFetchNoteById, useNotesHook} from "@/app/hooks/useNotesHook";
 import Loading from "@/app/components/Loading";
 import {useDeviceType} from "@/app/hooks/useDeviceType";
 import {NotesFetcher} from "@/app/state/NotesFetcher";
-import {currentNote, editorContent, Note, notes} from "@/app/state/notes";
-import {useAtom} from "jotai";
-
-interface NoteContextType {
-    notes: Note[];
-    setNotes: React.Dispatch<React.SetStateAction<Note[]>>;
-    currentNote: Note | null;
-    setCurrentNote: React.Dispatch<React.SetStateAction<Note | null>>;
-}
+import {currentNote, notes} from "@/app/state/notes";
+import {useAtom, useSetAtom} from "jotai";
 
 const CodingNotesList = () => {
     const isMobile = useDeviceType();
-    const [content] = useAtom(editorContent);
+    const setCurrentNote = useSetAtom(currentNote);
     const {user ,loading} = useAuth();
     const [notesList, setNotes] = useAtom(notes);
-    // const { data: notes = [] } = useNotesHook(user?.uid);
-
-    // const { data: selectedNote, refetch } = useFetchNoteById(currentNote?.id);
     const [showAddNote, setShowAddNote] = useState(false);
     const [noteInput, setInputNote] = useState<string>('')
     const router = useRouter()
     const [error, setError] = useState<string | null>(null);
     const params = useParams();
     const noteId = Array.isArray(params?.noteId) ? params.noteId[0] : params?.noteId;
-
 
     const handleAddNoteSubmit = async (e:  React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
