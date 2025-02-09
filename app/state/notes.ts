@@ -5,6 +5,7 @@ import { atom } from "jotai";
 export interface Note {
     id: string;
     content: string;
+    lastModified?: Date;
 }
 
 // Atoms for managing state globally

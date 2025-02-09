@@ -73,17 +73,17 @@ const CodingNotesList = () => {
 
     return (
         <div className={`grid ${isMobile ? 'grid-cols-1' : 'columns-3xs'}`}>
-            {notesList.map(note => (
-                <div key={note.id} className={` border h-22 ${note.id === noteId ? 'bg-gray-100' : ''}`}>
-
-                    <button key={note.id} onClick={() => handleNavigate(note.id)} className="w-full text-left">
-                        <div className="p-6 break-words whitespace-normal min-w-0">
-                            {note.content}
-
+            {[...notesList]
+                .sort((a, b) => (b.lastModified?.getTime() || 0) - (a.lastModified?.getTime() || 0)) // Sort by lastModified, newest first
+                .map(note => (
+                    <div key={note.id} className={`border h-22 ${note.id === noteId ? 'bg-gray-100' : ''}`}>
+                        <button key={note.id} onClick={() => handleNavigate(note.id)} className="w-full text-left">
+                            <div className="p-6 break-words whitespace-normal min-w-0">
+                                {note.content}
                             </div>
-                    </button>
-                </div>
-                    ))}
+                        </button>
+                    </div>
+                ))}
 
                     {
                         !showAddNote ?

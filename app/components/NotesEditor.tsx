@@ -5,7 +5,7 @@ import { useAuth } from "@/app/context/authContext";
 import {currentNote, editorContent, isLoading, notes} from "@/app/state/notes";
 import {useAtom, useAtomValue, useSetAtom} from "jotai";
 import {SingleNotesFetcher} from "@/app/SingleNoteFetcher";
-import {doc, onSnapshot, updateDoc} from "firebase/firestore";
+import {doc, onSnapshot, updateDoc,serverTimestamp} from "firebase/firestore";
 import {db} from "@/app/firebase/firebaseConfig";
 
 export default function NotesEditor() {
@@ -38,7 +38,7 @@ export default function NotesEditor() {
 
             setNotes((prevNotes) =>
                 prevNotes.map((note) =>
-                    note.id === selectedNote?.id ? { ...note, content: newContent } : note
+                    note.id === selectedNote?.id ? { ...note, content: newContent,lastModified: new Date() } : note
                 )
             );
 
@@ -50,25 +50,33 @@ export default function NotesEditor() {
             saveTimerRef.current = setTimeout(() => {
                 if (selectedNote && user?.uid) {
                     updateDoc(doc(db, "users", user.uid, "notes", selectedNote.id), {
-                        content: newContent
+                        content: newContent,
+                        lastModified: serverTimestamp(),
                     }).then(() => setSaving(false));
                 }
             }, 1000); // 1s debounce
         },
     });
 
-    // Firestore Live Sync: Listen for real-time updates
     useEffect(() => {
-        if (!user?.uid || !selectedNote?.id) return;
+        if (!user?.uid || !selectedNote?.id || !editor) return;
 
         const noteRef = doc(db, "users", user.uid, "notes", selectedNote.id);
         const unsubscribe = onSnapshot(noteRef, (doc) => {
-            if (doc.exists() && editor) {
-                editor.commands.setContent(doc.data().content, false);
+            if (doc.exists()) {
+                const newContent = doc.data().content;
+                const currentContent = editor.getHTML();
+
+                if (newContent !== currentContent) {
+                    // Preserve cursor
+                    const { from, to } = editor.state.selection;
+                    editor.commands.setContent(newContent, false);
+                    editor.commands.setTextSelection({ from, to });
+                }
             }
         });
 
-        return () => unsubscribe(); // Cleanup on unmount
+        return () => unsubscribe();
     }, [user?.uid, selectedNote?.id, editor]);
 
     if (loading) return <p>Loading notes...</p>;
@@ -82,6 +90,7 @@ export default function NotesEditor() {
                 <p className="text-sm text-gray-500 text-right">Saved</p>
             ))}
             <EditorContent editor={editor} className="focus:outline-none outline-0 min-w-96" />
+            {selectedNote?.lastModified ? new Intl.DateTimeFormat('en-US', { dateStyle: 'medium', timeStyle: 'short' }).format(selectedNote.lastModified) : "No date"}
         </div>
     );
 }

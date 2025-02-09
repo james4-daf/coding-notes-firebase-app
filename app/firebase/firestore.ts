@@ -8,6 +8,7 @@ import {
     doc,
     deleteDoc,
     getDoc,
+    Timestamp
 } from "firebase/firestore";
 import {Note} from "@/app/state/notes";
 
@@ -21,7 +22,7 @@ export const addUserNote = async (userId: string, userInput : string) => {
         // Default note data
         const newNote = {
             content: userInput,
-            createdAt: serverTimestamp(), // Firestore timestamp
+            lastModified: serverTimestamp(), // Firestore timestamp
         };
 
         // Add note to Firestore
@@ -42,10 +43,16 @@ export const getUserNotes = async (userId: string): Promise<Note[]> => {
         const notesRef = collection(db, "users", userId, "notes");
         const querySnapshot = await getDocs(notesRef);
 
-        return querySnapshot.docs.map((doc) => ({
-            id: doc.id, // Note ID
-            content: (doc.data().content as string) || "", // Ensure `content` exists
-        }));
+        return querySnapshot.docs.map((doc) => {
+            const data = doc.data();
+            return {
+                id: doc.id, // Note ID
+                content: data.content || "", // Ensure `content` exists
+                lastModified: data.lastModified instanceof Timestamp
+                    ? data.lastModified.toDate() // Convert Firestore Timestamp to Date
+                    : undefined,
+            };
+        });
     } catch (error) {
         console.error("Error fetching notes:", error);
         return [];
