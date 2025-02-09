@@ -27,17 +27,22 @@ export default function AppContent() {
                 <Header />
                 {isMobile ? (
                     // Mobile: Show only one view at a time
-                    <div className="p-4">
+                    <div className="p-4 " >
                         {noteId ? <NotesEditor/> : <CodingNotesList/>}
                     </div>
                 ) : (
                     // Desktop: Show both side by side
-                    <div className="flex gap-4 p-8">
-                        <div className={`${noteId ? 'flex-1' : 'w-[300px]'} transition-all`}>
+                    <div className="flex gap-4 p-8 transition-all">
+                        <div className="basis-[23%] ">
                             <CodingNotesList/>
                         </div>
-                        {noteId && <NotesEditor/>}
+                        {noteId &&
+                            <div className="basis-[76%]">
+                                <NotesEditor/>
+                            </div>
+                            }
                     </div>
+
                 )}
         </>
 
